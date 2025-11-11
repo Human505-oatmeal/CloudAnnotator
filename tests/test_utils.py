@@ -1,7 +1,8 @@
-import boto3
-from moto import mock_sns, mock_sts
-from src import utils
 import pytest
+import boto3
+from moto.sns import mock_sns
+from moto.sts import mock_sts
+from src import utils
 
 
 def test_retry_success():
@@ -47,5 +48,5 @@ def test_sns_publish():
     sns = session.client("sns")
     topic = sns.create_topic(Name="TestTopic")["TopicArn"]
 
-    utils.sns_publish(session, topic, "Test Subject", "Test Message")
     # No exceptions thrown means success
+    utils.sns_publish(session, topic, "Test Subject", "Test Message")
