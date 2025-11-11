@@ -14,7 +14,7 @@ This project was built as a demonstration for production-level serverless archit
 - Architecture diagram included
 
 # Architecture Overview
-![Architecture](../CloudAnnotator/docs/CloudAnnotator%20Architecture.png)
+![Architecture](/docs/CloudAnnotator%20Architecture.png)
 
 # Project Structure
 
