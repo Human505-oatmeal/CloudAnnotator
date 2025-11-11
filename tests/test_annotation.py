@@ -1,7 +1,7 @@
-import pytest
 from PIL import Image, ImageDraw
 from src import annotation
 import io
+
 
 # -----------------------------
 # Test draw_label_text
@@ -19,6 +19,7 @@ def test_draw_label_text_runs():
         bbox_height=50,
         img_height=200
     )
+
 
 def test_draw_bounding_boxes_runs(monkeypatch):
     # Mock boto3 s3 client
@@ -39,8 +40,11 @@ def test_draw_bounding_boxes_runs(monkeypatch):
 
     # Sample labels
     labels = [
-        {"Name": "TestObj", "Confidence": 90.0,
-         "Instances": [{"BoundingBox": {"Left": 0, "Top": 0, "Width": 1, "Height": 1}}]}
+        {
+            "Name": "TestObj",
+            "Confidence": 90.0,
+            "Instances": [{"BoundingBox": {"Left": 0, "Top": 0, "Width": 1, "Height": 1}}]
+        }
     ]
 
     session = MockSession()
