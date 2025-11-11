@@ -31,7 +31,6 @@ def test_retry_failure():
 # -----------------------------
 # Test validate_aws_identity
 # -----------------------------
-@pytest.mark.usefixtures("mock_sts")
 def test_validate_aws_identity():
     with moto.mock_sts():
         session = boto3.Session()
@@ -42,7 +41,6 @@ def test_validate_aws_identity():
 # -----------------------------
 # Test sns_publish
 # -----------------------------
-@pytest.mark.usefixtures("mock_sns")
 def test_sns_publish():
     with moto.mock_sns():
         session = boto3.Session(region_name="us-east-2")
