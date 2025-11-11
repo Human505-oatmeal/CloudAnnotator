@@ -5,6 +5,7 @@ import tempfile
 from datetime import datetime
 from .utils import retry, logger
 
+
 def draw_label_text(draw, text, position, bbox_width, bbox_height, img_height, fill='white', bg='red'):
     x, y = position
     font_path = "/opt/fonts/DejaVuSans-Bold.ttf"
@@ -67,7 +68,6 @@ def draw_bounding_boxes(bucket, photo, labels, session, min_confidence=70.0):
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_filename = f"annotated_{timestamp}_{os.path.basename(photo)}"
-
 
     temp_dir = tempfile.gettempdir()
     local_path = os.path.join(temp_dir, output_filename)
