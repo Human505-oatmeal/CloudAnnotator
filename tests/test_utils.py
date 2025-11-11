@@ -1,7 +1,7 @@
-import pytest
 import boto3
 from moto import mock_sns, mock_sts
 from src import utils
+import pytest
 
 
 def test_retry_success():
@@ -15,6 +15,7 @@ def test_retry_success():
     assert result == "ok"
     assert call_count["count"] == 1
 
+
 def test_retry_failure():
     call_count = {"count": 0}
 
@@ -22,10 +23,10 @@ def test_retry_failure():
         call_count["count"] += 1
         raise ValueError("fail")
 
-    
     with pytest.raises(ValueError):
         utils.retry(func, retries=2, delay=0.01)
     assert call_count["count"] == 2
+
 
 # -----------------------------
 # Test validate_aws_identity
@@ -34,9 +35,8 @@ def test_retry_failure():
 def test_validate_aws_identity():
     session = boto3.Session()
     identity = utils.validate_aws_identity(session)
-
-    
     assert "Arn" in identity
+
 
 # -----------------------------
 # Test sns_publish
@@ -47,6 +47,5 @@ def test_sns_publish():
     sns = session.client("sns")
     topic = sns.create_topic(Name="TestTopic")["TopicArn"]
 
-    
     utils.sns_publish(session, topic, "Test Subject", "Test Message")
     # No exceptions thrown means success
