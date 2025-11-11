@@ -79,7 +79,7 @@ Execution role permissions include:
 - CloudWatch Logs write permissions
 > [!NOTE]
 > All permissions are scoped to specific ARNs
-# Local Development & Testing
+# Local Development
 Install dependencies:
 ```
 pip install -r requirements.txt
