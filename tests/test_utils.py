@@ -1,7 +1,6 @@
 import pytest
 import boto3
-from moto.sns import mock_sns
-from moto.sts import mock_sts
+import moto
 from src import utils
 
 
@@ -32,21 +31,23 @@ def test_retry_failure():
 # -----------------------------
 # Test validate_aws_identity
 # -----------------------------
-@mock_sts
+@pytest.mark.usefixtures("mock_sts")
 def test_validate_aws_identity():
-    session = boto3.Session()
-    identity = utils.validate_aws_identity(session)
-    assert "Arn" in identity
+    with moto.mock_sts():
+        session = boto3.Session()
+        identity = utils.validate_aws_identity(session)
+        assert "Arn" in identity
 
 
 # -----------------------------
 # Test sns_publish
 # -----------------------------
-@mock_sns
+@pytest.mark.usefixtures("mock_sns")
 def test_sns_publish():
-    session = boto3.Session(region_name="us-east-2")
-    sns = session.client("sns")
-    topic = sns.create_topic(Name="TestTopic")["TopicArn"]
+    with moto.mock_sns():
+        session = boto3.Session(region_name="us-east-2")
+        sns = session.client("sns")
+        topic = sns.create_topic(Name="TestTopic")["TopicArn"]
 
-    # No exceptions thrown means success
-    utils.sns_publish(session, topic, "Test Subject", "Test Message")
+        # No exceptions thrown means success
+        utils.sns_publish(session, topic, "Test Subject", "Test Message")
