@@ -4,7 +4,8 @@ from io import BytesIO
 from PIL import Image
 
 from .annotation import draw_bounding_boxes, draw_label_text
-from .utils import sns_publish, retry, validate_aws_identity
+from .utils import sns_publish
+
 
 BUCKET_OUTPUT = os.environ.get("ANNOTATED_BUCKET", "annotated-bucket")
 SNS_TOPIC_ARN = os.environ.get("SNS_TOPIC_ARN", "arn:aws:sns:region:acct:topic")
@@ -12,7 +13,7 @@ SNS_TOPIC_ARN = os.environ.get("SNS_TOPIC_ARN", "arn:aws:sns:region:acct:topic")
 
 def detect_labels(bucket, key):
     rekognition = boto3.client("rekognition", region_name="us-east-1")
-    
+
     response = rekognition.detect_labels(
         Image={"S3Object": {"Bucket": bucket, "Name": key}},
         MaxLabels=10,
