@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.13]
+        python-version: [3.9]  # Downgraded from 3.13 to 3.9 for moto compatibility
 
     steps:
       - name: Checkout Repository
