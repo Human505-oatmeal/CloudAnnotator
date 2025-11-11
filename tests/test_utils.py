@@ -1,6 +1,6 @@
 import pytest
 import boto3
-from moto import mock_aws  # use the new unified mock
+from moto import mock_sts, mock_sns  # use dedicated service mocks
 from src import utils
 
 
@@ -29,14 +29,14 @@ def test_retry_failure():
 
 
 def test_validate_aws_identity():
-    with mock_aws(service="sts"):  # updated for Moto 5.x
+    with mock_sts():  # dedicated STS mock
         session = boto3.Session()
         identity = utils.validate_aws_identity(session)
         assert "Arn" in identity
 
 
 def test_sns_publish():
-    with mock_aws(service="sns"):  # updated for Moto 5.x
+    with mock_sns():  # dedicated SNS mock
         session = boto3.Session(region_name="us-east-2")
         client = session.client("sns")
         topic_arn = client.create_topic(Name="TestTopic")["TopicArn"]
