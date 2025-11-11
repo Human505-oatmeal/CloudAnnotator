@@ -1,6 +1,6 @@
 import pytest
 import boto3
-from moto import mock_sts, mock_sns  # use dedicated service mocks
+from moto import mock_sts, mock_sns
 from src import utils
 
 
@@ -29,17 +29,18 @@ def test_retry_failure():
 
 
 def test_validate_aws_identity():
-    with mock_sts():  # dedicated STS mock
+    with mock_sts():
         session = boto3.Session()
         identity = utils.validate_aws_identity(session)
+        # STS mock always returns an Arn
         assert "Arn" in identity
 
 
 def test_sns_publish():
-    with mock_sns():  # dedicated SNS mock
+    with mock_sns():
         session = boto3.Session(region_name="us-east-2")
         client = session.client("sns")
         topic_arn = client.create_topic(Name="TestTopic")["TopicArn"]
 
-        # No exceptions thrown means success
+        # Call your utility function; success is no exception
         utils.sns_publish(session, topic_arn, "Test Subject", "Test Message")
