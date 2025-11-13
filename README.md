@@ -9,7 +9,7 @@ This project was built as a demonstration for production-level serverless archit
 - Automatic object detection powered by Amazon Rekognition
 - Bounding box and label drawing using Pillow
 - Modular Python codebase with clear separation of concerns
-- Minimal, secure IAM role design.
+- Minimal, secure in-line based IAM role design.
 - CI/CD using GitHub Actions for automated deployment.
 - Architecture diagram included
 
