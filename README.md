@@ -38,10 +38,14 @@ Before using CloudAnnotator, ensure you have the following installed or configur
 Here's a visual example of CloudAnnotator in action:
 
 **Sample Input Image**
-![Sample Input](/docs/sample_images/sample_input.jpg)
+<div align="left">
+  <img src="/docs/sample_images/sample_input.jpg" width="400">
+</div>
 
 **Sample Output Image**
-![Sample Output](/docs/sample_images/sample_output.jpg)
+<div align="left">
+  <img src="/docs/sample_images/sample_output.jpg" width="400">
+</div>
 
 **Animated Showcase**
 ![Project Showcase](/docs/showcase/project_showcase.gif)
