@@ -6,7 +6,7 @@
 
 Cloud Annotator is a serverless image-processing built on AWS Lambda and Amazon Rekognition. The system automatically analyzes images uploaded to S3, extracts object labels and bounding boxes using Rekognition, and annotates the image using a custom Pillow-based annotation layer. The annotated image and metadata are then stored back in S3 for downstream use.
 
-> ![NOTE]
+> [!NOTE]
 > This project was built as a demonstration for production-level serverless architecture, CI/CD automation with GitHub Actions, IAM least-privilege security practices, and modular Python design intended for scalability.
 
 # Prerequisites
@@ -120,9 +120,12 @@ Execution role permissions include:
 - `sns:Publish` for notifications
 - CloudWatch Logs write permissions
 - `sts:GetCallerIdentity`
-> [!NOTE]
-> All permissions are scoped to specific ARNs
-</details> <details> <summary>AWS Inline Policy JSON (click to expand)</summary>
+
+> **NOTE:** All permissions are scoped to specific ARNs
+
+</details>
+
+<details><summary>AWS Inline Policy JSON (click to expand)</summary>
 
 ```json
 {
@@ -171,16 +174,17 @@ Execution role permissions include:
     ]
 }
 ```
-> ![NOTE]
-> Replace with your ARNs accordingly. This is what was used during the production of this project.
 
+> **NOTE:** Replace with your ARNs accordingly. This is what was used during the production of this project.
+
+</details>
 
 # Local Development
 
 <details> <summary>Build Lambda Pillow Layer with Docker</summary>
 
-> [!NOTE]
-> To ensure Pillow is compatible with AWS Lambda’s Python 3.13 runtime, we use an Amazon Linux 2023 Docker container.
+
+> **NOTE:** To ensure Pillow is compatible with AWS Lambda’s Python 3.13 runtime, we use an Amazon Linux 2023 Docker container.
 
 ```dockerfile
 FROM amazonlinux:2023
@@ -220,10 +224,11 @@ docker cp temp-pillow:/var/task/pillow-layer.zip ./layers/pillow_layer.zip
 docker rm temp-pillow
 ```
 
-> [!NOTE]
-> The `pillow_layer.zip` is now in the `layers/` folder and can be attached as a Lambda layer.
+> **NOTE:** The **pillow_layer.zip** is now in the **layers/** folder and can be attached as a Lambda layer.
 
-## Running Locally
+</details>
+
+# Running Locally
 
 Install dependencies:
 ```bash
