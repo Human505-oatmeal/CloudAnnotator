@@ -3,7 +3,7 @@ import os
 import io
 import tempfile
 from datetime import datetime
-from .utils import retry, logger
+from .utils import retry
 
 
 def draw_label_text(draw, text, position, bbox_width, bbox_height, img_height, fill='white', bg='red'):
