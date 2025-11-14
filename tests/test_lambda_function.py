@@ -4,12 +4,6 @@ from unittest.mock import patch, MagicMock
 from io import BytesIO
 from PIL import Image
 
-# Set SNS_TOPIC_ARN before importing the lambda module
-os.environ["SNS_TOPIC_ARN"] = "arn:aws:sns:us-east-1:123456789012:TestTopic"
-
-from src import lambda_function as lf  # import AFTER env var is set
-
-
 def create_test_image_bytes():
     """Create an in-memory JPEG image for testing."""
     img = Image.new("RGB", (100, 100), color="blue")
@@ -21,6 +15,13 @@ def create_test_image_bytes():
 
 class TestLambdaFunction(unittest.TestCase):
     bucket_name = "test-bucket"
+
+    @classmethod
+    def setUpClass(cls):
+        # Set environment variable before importing lambda_function
+        os.environ["SNS_TOPIC_ARN"] = "arn:aws:sns:us-east-1:123456789012:TestTopic"
+        global lf
+        from src import lambda_function as lf
 
     @patch("src.lambda_function.detect_labels")
     @patch("src.lambda_function.draw_label_text")
