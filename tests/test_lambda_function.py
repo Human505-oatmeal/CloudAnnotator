@@ -27,7 +27,6 @@ class TestLambdaFunction(unittest.TestCase):
     @patch("src.lambda_function.detect_labels")
     @patch("src.lambda_function.draw_label_text")
     @patch("src.lambda_function.sns_publish")
-    @patch.dict(os.environ, {"SNS_TOPIC_ARN": "arn:aws:sns:us-east-1:123456789012:TestTopic"})
     def test_label_confidence_combined(self, mock_sns_publish, mock_draw_label_text, mock_detect_labels):
         mock_detect_labels.return_value = [
             {
@@ -43,8 +42,15 @@ class TestLambdaFunction(unittest.TestCase):
                 "Body": MagicMock(read=MagicMock(return_value=create_test_image_bytes().getvalue()))
             }
 
+            mock_sts = MagicMock()
+            mock_sts.get_caller_identity.return_value = {"Account": "123456789012", "UserId": "test", "Arn": "arn:aws:iam::123456789012:user/test"}
+
             mock_session_instance = MagicMock()
-            mock_session_instance.client.return_value = mock_s3
+            mock_session_instance.client.side_effect = lambda service_name, **kwargs: {
+                "s3": mock_s3,
+                "sts": mock_sts
+            }[service_name]
+
             mock_boto_session.return_value = mock_session_instance
 
             event = {
@@ -79,8 +85,15 @@ class TestLambdaFunction(unittest.TestCase):
                 "Body": MagicMock(read=MagicMock(return_value=create_test_image_bytes().getvalue()))
             }
 
+            mock_sts = MagicMock()
+            mock_sts.get_caller_identity.return_value = {"Account": "123456789012", "UserId": "test", "Arn": "arn:aws:iam::123456789012:user/test"}
+
             mock_session_instance = MagicMock()
-            mock_session_instance.client.return_value = mock_s3
+            mock_session_instance.client.side_effect = lambda service_name, **kwargs: {
+                "s3": mock_s3,
+                "sts": mock_sts
+            }[service_name]
+
             mock_boto_session.return_value = mock_session_instance
 
             event = {
@@ -108,8 +121,15 @@ class TestLambdaFunction(unittest.TestCase):
                 "Body": MagicMock(read=MagicMock(return_value=create_test_image_bytes().getvalue()))
             }
 
+            mock_sts = MagicMock()
+            mock_sts.get_caller_identity.return_value = {"Account": "123456789012", "UserId": "test", "Arn": "arn:aws:iam::123456789012:user/test"}
+
             mock_session_instance = MagicMock()
-            mock_session_instance.client.return_value = mock_s3
+            mock_session_instance.client.side_effect = lambda service_name, **kwargs: {
+                "s3": mock_s3,
+                "sts": mock_sts
+            }[service_name]
+
             mock_boto_session.return_value = mock_session_instance
 
             event = {
@@ -145,10 +165,17 @@ class TestLambdaFunction(unittest.TestCase):
                 "Body": MagicMock(read=MagicMock(return_value=create_test_image_bytes().getvalue()))
             }
 
+            mock_sts = MagicMock()
+            mock_sts.get_caller_identity.return_value = {"Account": "123456789012", "UserId": "test", "Arn": "arn:aws:iam::123456789012:user/test"}
+
+            mock_sns = MagicMock()
+            mock_sns.publish.return_value = {}
+
             mock_session_instance = MagicMock()
             mock_session_instance.client.side_effect = lambda service_name, **kwargs: {
                 "s3": mock_s3,
-                "sns": MagicMock(publish=MagicMock(return_value={}))
+                "sns": mock_sns,
+                "sts": mock_sts
             }[service_name]
 
             mock_boto_session.return_value = mock_session_instance
