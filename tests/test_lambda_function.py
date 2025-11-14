@@ -4,6 +4,7 @@ from unittest.mock import patch, MagicMock
 from io import BytesIO
 from PIL import Image
 
+
 def create_test_image_bytes():
     """Create an in-memory JPEG image for testing."""
     img = Image.new("RGB", (100, 100), color="blue")
