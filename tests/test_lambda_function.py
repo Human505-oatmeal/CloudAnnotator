@@ -27,36 +27,39 @@ class TestLambdaFunction(unittest.TestCase):
     @patch("src.lambda_function.detect_labels")
     @patch("src.lambda_function.draw_label_text")
     @patch("src.lambda_function.sns_publish")
-    def test_label_confidence_combined(self, mock_sns_publish, mock_draw_label_text, mock_detect_labels):
+    @patch.dict(os.environ, {"SNS_TOPIC_ARN": "arn:aws:sns:us-east-1:123456789012:TestTopic"})
+    def test_label_confidence_combined(
+        self, mock_sns_publish, mock_draw_label_text, mock_detect_labels
+    ):
         mock_detect_labels.return_value = [
             {
                 "Name": "TestObj",
                 "Confidence": 88.5,
-                "Instances": [{"BoundingBox": {"Left": 0, "Top": 0, "Width": 1, "Height": 1}}]
+                "Instances": [{"BoundingBox": {"Left": 0, "Top": 0, "Width": 1, "Height": 1}}],
             }
         ]
 
         with patch("src.lambda_function.boto3.Session") as mock_boto_session:
             mock_s3 = MagicMock()
             mock_s3.get_object.return_value = {
-                "Body": MagicMock(read=MagicMock(return_value=create_test_image_bytes().getvalue()))
+                "Body": MagicMock(
+                    read=MagicMock(return_value=create_test_image_bytes().getvalue())
+                )
             }
 
-            mock_sts = MagicMock()
-            mock_sts.get_caller_identity.return_value = {"Account": "123456789012", "UserId": "test", "Arn": "arn:aws:iam::123456789012:user/test"}
-
             mock_session_instance = MagicMock()
-            mock_session_instance.client.side_effect = lambda service_name, **kwargs: {
-                "s3": mock_s3,
-                "sts": mock_sts
-            }[service_name]
-
+            mock_session_instance.client.return_value = mock_s3
             mock_boto_session.return_value = mock_session_instance
 
             event = {
-                "Records": [{
-                    "s3": {"bucket": {"name": self.bucket_name}, "object": {"key": "images/test.jpg"}}
-                }]
+                "Records": [
+                    {
+                        "s3": {
+                            "bucket": {"name": self.bucket_name},
+                            "object": {"key": "images/test.jpg"},
+                        }
+                    }
+                ]
             }
 
             result = lf.lambda_handler(event, None)
@@ -74,7 +77,7 @@ class TestLambdaFunction(unittest.TestCase):
             {
                 "Name": "TestObject",
                 "Confidence": 99.0,
-                "Instances": [{"BoundingBox": {"Left": 0.1, "Top": 0.1, "Width": 0.5, "Height": 0.5}}]
+                "Instances": [{"BoundingBox": {"Left": 0.1, "Top": 0.1, "Width": 0.5, "Height": 0.5}}],
             }
         ]
         mock_draw.side_effect = Exception("Drawing error")
@@ -82,24 +85,24 @@ class TestLambdaFunction(unittest.TestCase):
         with patch("src.lambda_function.boto3.Session") as mock_boto_session:
             mock_s3 = MagicMock()
             mock_s3.get_object.return_value = {
-                "Body": MagicMock(read=MagicMock(return_value=create_test_image_bytes().getvalue()))
+                "Body": MagicMock(
+                    read=MagicMock(return_value=create_test_image_bytes().getvalue())
+                )
             }
 
-            mock_sts = MagicMock()
-            mock_sts.get_caller_identity.return_value = {"Account": "123456789012", "UserId": "test", "Arn": "arn:aws:iam::123456789012:user/test"}
-
             mock_session_instance = MagicMock()
-            mock_session_instance.client.side_effect = lambda service_name, **kwargs: {
-                "s3": mock_s3,
-                "sts": mock_sts
-            }[service_name]
-
+            mock_session_instance.client.return_value = mock_s3
             mock_boto_session.return_value = mock_session_instance
 
             event = {
-                "Records": [{
-                    "s3": {"bucket": {"name": self.bucket_name}, "object": {"key": "images/test.jpg"}}
-                }]
+                "Records": [
+                    {
+                        "s3": {
+                            "bucket": {"name": self.bucket_name},
+                            "object": {"key": "images/test.jpg"},
+                        }
+                    }
+                ]
             }
 
             result = lf.lambda_handler(event, None)
@@ -118,24 +121,24 @@ class TestLambdaFunction(unittest.TestCase):
         with patch("src.lambda_function.boto3.Session") as mock_boto_session:
             mock_s3 = MagicMock()
             mock_s3.get_object.return_value = {
-                "Body": MagicMock(read=MagicMock(return_value=create_test_image_bytes().getvalue()))
+                "Body": MagicMock(
+                    read=MagicMock(return_value=create_test_image_bytes().getvalue())
+                )
             }
 
-            mock_sts = MagicMock()
-            mock_sts.get_caller_identity.return_value = {"Account": "123456789012", "UserId": "test", "Arn": "arn:aws:iam::123456789012:user/test"}
-
             mock_session_instance = MagicMock()
-            mock_session_instance.client.side_effect = lambda service_name, **kwargs: {
-                "s3": mock_s3,
-                "sts": mock_sts
-            }[service_name]
-
+            mock_session_instance.client.return_value = mock_s3
             mock_boto_session.return_value = mock_session_instance
 
             event = {
-                "Records": [{
-                    "s3": {"bucket": {"name": self.bucket_name}, "object": {"key": "images/test.jpg"}}
-                }]
+                "Records": [
+                    {
+                        "s3": {
+                            "bucket": {"name": self.bucket_name},
+                            "object": {"key": "images/test.jpg"},
+                        }
+                    }
+                ]
             }
 
             result = lf.lambda_handler(event, None)
@@ -155,35 +158,41 @@ class TestLambdaFunction(unittest.TestCase):
             {
                 "Name": "TestObject",
                 "Confidence": 99.0,
-                "Instances": [{"BoundingBox": {"Left": 0.1, "Top": 0.1, "Width": 0.5, "Height": 0.5}}]
+                "Instances": [{"BoundingBox": {"Left": 0.1, "Top": 0.1, "Width": 0.5, "Height": 0.5}}],
             }
         ]
 
         with patch("src.lambda_function.boto3.Session") as mock_boto_session:
             mock_s3 = MagicMock()
             mock_s3.get_object.return_value = {
-                "Body": MagicMock(read=MagicMock(return_value=create_test_image_bytes().getvalue()))
+                "Body": MagicMock(
+                    read=MagicMock(return_value=create_test_image_bytes().getvalue())
+                )
             }
 
-            mock_sts = MagicMock()
-            mock_sts.get_caller_identity.return_value = {"Account": "123456789012", "UserId": "test", "Arn": "arn:aws:iam::123456789012:user/test"}
-
-            mock_sns = MagicMock()
-            mock_sns.publish.return_value = {}
+            # Include 'sts' in client side_effect to prevent KeyError
+            def client_side_effect(service_name, **kwargs):
+                if service_name == "s3":
+                    return mock_s3
+                if service_name == "sns":
+                    return MagicMock(publish=MagicMock(return_value={}))
+                if service_name == "sts":
+                    return MagicMock(get_caller_identity=MagicMock(return_value={"Arn": "test-arn"}))
+                raise ValueError(f"Unmocked service: {service_name}")
 
             mock_session_instance = MagicMock()
-            mock_session_instance.client.side_effect = lambda service_name, **kwargs: {
-                "s3": mock_s3,
-                "sns": mock_sns,
-                "sts": mock_sts
-            }[service_name]
-
+            mock_session_instance.client.side_effect = client_side_effect
             mock_boto_session.return_value = mock_session_instance
 
             event = {
-                "Records": [{
-                    "s3": {"bucket": {"name": self.bucket_name}, "object": {"key": "images/test.jpg"}}
-                }]
+                "Records": [
+                    {
+                        "s3": {
+                            "bucket": {"name": self.bucket_name},
+                            "object": {"key": "images/test.jpg"},
+                        }
+                    }
+                ]
             }
 
             result = lf.lambda_handler(event, None)
