@@ -1,9 +1,8 @@
 import unittest
+import os
 from unittest.mock import patch, MagicMock
 from io import BytesIO
 from PIL import Image
-from src import lambda_function as lf
-
 
 def create_test_image_bytes():
     """Create an in-memory JPEG image for testing."""
@@ -16,6 +15,13 @@ def create_test_image_bytes():
 
 class TestLambdaFunction(unittest.TestCase):
     bucket_name = "test-bucket"
+
+    @classmethod
+    def setUpClass(cls):
+        # Set environment variable before importing lambda_function
+        os.environ["SNS_TOPIC_ARN"] = "arn:aws:sns:us-east-1:123456789012:TestTopic"
+        global lf
+        from src import lambda_function as lf
 
     @patch("src.lambda_function.detect_labels")
     @patch("src.lambda_function.draw_label_text")
@@ -32,7 +38,6 @@ class TestLambdaFunction(unittest.TestCase):
 
         with patch("src.lambda_function.boto3.Session") as mock_boto_session:
             mock_s3 = MagicMock()
-            # Properly mock S3 get_object to return bytes
             mock_s3.get_object.return_value = {
                 "Body": MagicMock(read=MagicMock(return_value=create_test_image_bytes().getvalue()))
             }
@@ -53,7 +58,6 @@ class TestLambdaFunction(unittest.TestCase):
             self.assertEqual(result["labels_detected"], 1)
             mock_draw_label_text.assert_called_once()
             mock_s3.get_object.assert_called_with(Bucket=self.bucket_name, Key="images/test.jpg")
-            # Removed sns_publish assertion as per your instruction
 
     @patch("src.lambda_function.detect_labels")
     @patch("src.lambda_function.draw_bounding_boxes")
@@ -145,6 +149,7 @@ class TestLambdaFunction(unittest.TestCase):
                 "s3": mock_s3,
                 "sns": MagicMock(publish=MagicMock(return_value={}))
             }[service_name]
+
             mock_boto_session.return_value = mock_session_instance
 
             event = {

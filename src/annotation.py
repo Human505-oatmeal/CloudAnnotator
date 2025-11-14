@@ -3,7 +3,7 @@ import os
 import io
 import tempfile
 from datetime import datetime
-from .utils import retry, logger
+from .utils import retry
 
 
 def draw_label_text(draw, text, position, bbox_width, bbox_height, img_height, fill='white', bg='red'):
@@ -13,8 +13,7 @@ def draw_label_text(draw, text, position, bbox_width, bbox_height, img_height, f
     font_size = max(int(bbox_height * 0.5), int(img_height * 0.03), 12)
     try:
         font = ImageFont.truetype(font_path, font_size)
-    except Exception as e:
-        logger.warning(f"Font load failed, using default: {e}")
+    except Exception:
         font = ImageFont.load_default()
 
     bbox_text = draw.textbbox((0, 0), text, font=font)
@@ -29,7 +28,6 @@ def draw_label_text(draw, text, position, bbox_width, bbox_height, img_height, f
             font = ImageFont.load_default()
         bbox_text = draw.textbbox((0, 0), text, font=font)
         text_width = bbox_text[2] - bbox_text[0]
-        text_height = bbox_text[3] - bbox_text[1]
 
     padding = 2
     rect_x0 = x
@@ -66,13 +64,10 @@ def draw_bounding_boxes(bucket, photo, labels, session, min_confidence=70.0):
             text_combined = f"{label['Name']} {confidence:.1f}%"
             draw_label_text(draw, text_combined, (left, top), width, height, img_height)
 
+    # Save locally and upload to S3
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_filename = f"annotated_{timestamp}_{os.path.basename(photo)}"
-
-    temp_dir = tempfile.gettempdir()
-    local_path = os.path.join(temp_dir, output_filename)
-
+    local_path = os.path.join(tempfile.gettempdir(), output_filename)
     image.save(local_path)
     s3.upload_file(local_path, bucket, f"annotated/{output_filename}")
-
     return local_path
