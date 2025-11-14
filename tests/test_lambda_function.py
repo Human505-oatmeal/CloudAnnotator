@@ -20,6 +20,7 @@ class TestLambdaFunction(unittest.TestCase):
     @patch("src.lambda_function.detect_labels")
     @patch("src.lambda_function.draw_label_text")
     @patch("src.lambda_function.sns_publish")
+    @patch.dict(os.environ, {"SNS_TOPIC_ARN": "arn:aws:sns:us-east-1:123456789012:TestTopic"})
     def test_label_confidence_combined(self, mock_sns_publish, mock_draw_label_text, mock_detect_labels):
         mock_detect_labels.return_value = [
             {
