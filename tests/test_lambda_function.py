@@ -1,4 +1,5 @@
 import unittest
+import os
 from unittest.mock import patch, MagicMock
 from io import BytesIO
 from PIL import Image
