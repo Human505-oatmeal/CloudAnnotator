@@ -22,7 +22,6 @@ class TestLambdaFunction(unittest.TestCase):
     @patch("src.lambda_function.draw_label_text")
     @patch("src.lambda_function.sns_publish")
     def test_label_confidence_combined(self, mock_sns_publish, mock_draw_label_text, mock_detect_labels):
-
         # Import AFTER environment patch so SNS_TOPIC_ARN loads correctly
         from importlib import reload
         import src.lambda_function as lf
@@ -59,13 +58,11 @@ class TestLambdaFunction(unittest.TestCase):
             mock_draw_label_text.assert_called_once()
             mock_s3.get_object.assert_called_with(Bucket=self.bucket_name, Key="images/test.jpg")
 
-
     @patch.dict(os.environ, {"SNS_TOPIC_ARN": "arn:aws:sns:us-east-1:123456789012:TestTopic"})
     @patch("src.lambda_function.detect_labels")
     @patch("src.lambda_function.draw_bounding_boxes")
     @patch("src.lambda_function.sns_publish")
     def test_lambda_handler_draw_error(self, mock_sns_publish, mock_draw, mock_detect):
-
         from importlib import reload
         import src.lambda_function as lf
         lf = reload(lf)
@@ -98,12 +95,10 @@ class TestLambdaFunction(unittest.TestCase):
             subject = args[2] if len(args) > 2 else kwargs.get("subject", "")
             self.assertIn("Drawing Error", subject)
 
-
     @patch.dict(os.environ, {"SNS_TOPIC_ARN": "arn:aws:sns:us-east-1:123456789012:TestTopic"})
     @patch("src.lambda_function.detect_labels")
     @patch("src.lambda_function.sns_publish")
     def test_lambda_handler_no_labels(self, mock_sns_publish, mock_detect):
-
         from importlib import reload
         import src.lambda_function as lf
         lf = reload(lf)
@@ -132,14 +127,12 @@ class TestLambdaFunction(unittest.TestCase):
             subject = args[2] if len(args) > 2 else kwargs.get("subject", "")
             self.assertIn("Empty Results", subject)
 
-
     @patch.dict(os.environ, {"SNS_TOPIC_ARN": "arn:aws:sns:us-east-1:123456789012:TestTopic"})
     @patch("src.lambda_function.detect_labels")
     @patch("src.lambda_function.draw_bounding_boxes")
     @patch("src.lambda_function.draw_label_text")
     @patch("src.lambda_function.sns_publish")
     def test_lambda_handler_success(self, mock_sns_publish, mock_draw_label_text, mock_draw, mock_detect):
-
         from importlib import reload
         import src.lambda_function as lf
         lf = reload(lf)
